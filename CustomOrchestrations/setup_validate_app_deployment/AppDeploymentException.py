@@ -1,0 +1,2 @@
+class AppLimitDeploymentError(Exception):
+    pass

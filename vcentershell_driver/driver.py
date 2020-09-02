@@ -10,7 +10,7 @@ from cloudshell.shell.core.session.cloudshell_session import CloudShellSessionCo
 from cloudshell.shell.core.resource_driver_interface import ResourceDriverInterface
 from cloudshell.cp.vcenter.common.vcenter.model_auto_discovery import VCenterAutoModelDiscovery
 from cloudshell.cp.vcenter.models.DeployFromTemplateDetails import DeployFromTemplateDetails
-from validate_app_deployment_helper import get_cp_restricted_attrs_dict
+from validate_app_deployment_helper import get_cp_restricted_attrs_dict, AppLimitDeploymentError
 
 
 class VCenterShellDriver(ResourceDriverInterface):
@@ -96,7 +96,7 @@ class VCenterShellDriver(ResourceDriverInterface):
 
             pool_attr_search = [attr for attr in app_resource_attrs if attr["attributeName"] == RESOURCE_POOL_ATTR]
             if pool_attr_search:
-                app_pool_attr_val = pool_attr_search[0]["attributeName"]
+                app_pool_attr_val = pool_attr_search[0]["attributeValue"]
                 restricted_attrs_dict = get_cp_restricted_attrs_dict(cp_pool_list_val)
                 try:
                     app_pool_limit = restricted_attrs_dict[app_pool_attr_val]
@@ -120,10 +120,14 @@ class VCenterShellDriver(ResourceDriverInterface):
 
                     # PERFORM VALIDATION
                     if len(matching_apps) >= int(app_pool_limit):
-                        exc_msg = "Can not deploy '{}'. The pool '{}' has reached it's limit of {}".format(app_name,
-                                                                                                           app_pool_attr_val,
-                                                                                                           app_pool_limit)
-                        raise Exception(exc_msg)
+                        matching_app_names = [r.Name for r in matching_apps]
+                        exc_msg = "Can not deploy '{}'. The pool '{}' has reached it's limit of {}. Current Apps in Pool: {}".format(
+                            app_name,
+                            app_pool_attr_val,
+                            app_pool_limit,
+                            matching_app_names)
+                        api.WriteMessageToReservationOutput(res_id, '<span style="color:red">{}</span>'.format(exc_msg))
+                        raise AppLimitDeploymentError(exc_msg)
 
         actions = self.request_parser.convert_driver_request_to_actions(request)
         deploy_action = single(actions, lambda x: isinstance(x, DeployApp))
