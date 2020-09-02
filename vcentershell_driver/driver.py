@@ -1,12 +1,16 @@
+import json
+
 from cloudshell.cp.core import DriverRequestParser
 from cloudshell.cp.core.models import DeployApp, DriverResponse, SaveApp, DeleteSavedApp
 from cloudshell.cp.core.utils import single
 
 from cloudshell.cp.vcenter.commands.command_orchestrator import CommandOrchestrator
-from cloudshell.shell.core.context import ResourceCommandContext, CancellationContext
+from cloudshell.shell.core.context import ResourceCommandContext, CancellationContext, ResourceRemoteCommandContext
+from cloudshell.shell.core.session.cloudshell_session import CloudShellSessionContext
 from cloudshell.shell.core.resource_driver_interface import ResourceDriverInterface
 from cloudshell.cp.vcenter.common.vcenter.model_auto_discovery import VCenterAutoModelDiscovery
 from cloudshell.cp.vcenter.models.DeployFromTemplateDetails import DeployFromTemplateDetails
+from validate_app_deployment_helper import get_cp_restricted_attrs_dict
 
 
 class VCenterShellDriver(ResourceDriverInterface):
@@ -60,6 +64,67 @@ class VCenterShellDriver(ResourceDriverInterface):
         return self.command_orchestrator.power_cycle(context, ports, delay)
 
     def Deploy(self, context, request=None, cancellation_context=None):
+        """
+
+        :param ResourceCommandContext context:
+        :param str request: json string to be parsed
+        :param cancellation_context:
+        :return:
+        """
+
+        RESOURCE_POOL_ATTR = "App Pool Name"
+        CP_RESTRICTED_ATTR = "Restricted App Model Pools"
+
+        api = CloudShellSessionContext(context).get_api()
+        res_id = context.reservation.reservation_id
+
+        # VALIDATE THAT CLOUD PROVIDER RESOURCE HAS POOL LIST Attribute
+        cp_attrs = context.resource.attributes
+        try:
+            cp_pool_list_val = cp_attrs[CP_RESTRICTED_ATTR]
+        except KeyError:
+            pass
+        else:
+            api.WriteMessageToReservationOutput(res_id, "=== full request json ===")
+            api.WriteMessageToReservationOutput(res_id, request)
+            request_obj = json.loads(request)
+            request_action_params = request_obj["driverRequest"]["actions"][0]["actionParams"]
+            app_name = request_action_params["appName"]
+            deployment = request_action_params["deployment"]
+            app_resource = request_action_params["appResource"]
+            app_resource_attrs = app_resource["attributes"]
+
+            pool_attr_search = [attr for attr in app_resource_attrs if attr["attributeName"] == RESOURCE_POOL_ATTR]
+            if pool_attr_search:
+                app_pool_attr_val = pool_attr_search[0]["attributeName"]
+                restricted_attrs_dict = get_cp_restricted_attrs_dict(cp_pool_list_val)
+                try:
+                    app_pool_limit = restricted_attrs_dict[app_pool_attr_val]
+                except KeyError:
+                    not_found_msg = "{} pool name key not in cp restricted list {}".format(app_pool_attr_val,
+                                                                                           restricted_attrs_dict)
+                    api.WriteMessageToReservationOutput(res_id, not_found_msg)
+                else:
+                    # count deployed apps
+                    all_generic_app_resources = api.FindResources(resourceFamily="Generic App Family").Resources
+
+                    # collect matching apps
+                    matching_apps = []
+                    for resource in all_generic_app_resources:
+                        attrs = api.GetResourceDetails(resource.Name).ResourceAttributes
+                        attr_search = [attr for attr in attrs if attr.Name == RESOURCE_POOL_ATTR]
+                        if attr_search:
+                            attr_val = attr_search[0].Value
+                            if attr_val == app_pool_attr_val:
+                                matching_apps.append(resource)
+
+                    # PERFORM VALIDATION
+                    if len(matching_apps) >= int(app_pool_limit):
+                        exc_msg = "Can not deploy '{}'. The pool '{}' has reached it's limit of {}".format(app_name,
+                                                                                                           app_pool_attr_val,
+                                                                                                           app_pool_limit)
+                        raise Exception(exc_msg)
+
         actions = self.request_parser.convert_driver_request_to_actions(request)
         deploy_action = single(actions, lambda x: isinstance(x, DeployApp))
         deployment_name = deploy_action.actionParams.deployment.deploymentPath
