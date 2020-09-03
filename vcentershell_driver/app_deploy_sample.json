@@ -1,0 +1,126 @@
+{
+    "driverRequest":{
+        "actions":[
+            {
+                "actionParams":{
+                    "appName":"Linux Ubuntu Tiny",
+                    "deployment":{
+                        "deploymentPath":"vCenter VM From Template",
+                        "attributes":[
+                            {
+                                "attributeName":"vCenter Name",
+                                "attributeValue":"VMWare vCenter",
+                                "type":"attribute"
+                            },
+                            {
+                                "attributeName":"vCenter Template",
+                                "attributeValue":"Natti/templates/demo_template",
+                                "type":"attribute"
+                            },
+                            {
+                                "attributeName":"VM Cluster",
+                                "attributeValue":"",
+                                "type":"attribute"
+                            },
+                            {
+                                "attributeName":"VM Storage",
+                                "attributeValue":"",
+                                "type":"attribute"
+                            },
+                            {
+                                "attributeName":"Behavior during save",
+                                "attributeValue":"Remain Powered On",
+                                "type":"attribute"
+                            },
+                            {
+                                "attributeName":"VM Resource Pool",
+                                "attributeValue":"",
+                                "type":"attribute"
+                            },
+                            {
+                                "attributeName":"VM Location",
+                                "attributeValue":"",
+                                "type":"attribute"
+                            },
+                            {
+                                "attributeName":"Auto Power On",
+                                "attributeValue":"True",
+                                "type":"attribute"
+                            },
+                            {
+                                "attributeName":"Auto Power Off",
+                                "attributeValue":"True",
+                                "type":"attribute"
+                            },
+                            {
+                                "attributeName":"Wait for IP",
+                                "attributeValue":"True",
+                                "type":"attribute"
+                            },
+                            {
+                                "attributeName":"Auto Delete",
+                                "attributeValue":"True",
+                                "type":"attribute"
+                            },
+                            {
+                                "attributeName":"Autoload",
+                                "attributeValue":"True",
+                                "type":"attribute"
+                            },
+                            {
+                                "attributeName":"IP Regex",
+                                "attributeValue":"",
+                                "type":"attribute"
+                            },
+                            {
+                                "attributeName":"Refresh IP Timeout",
+                                "attributeValue":"600",
+                                "type":"attribute"
+                            }
+                        ],
+                        "type":"deployAppDeploymentInfo"
+                    },
+                    "appResource":{
+                        "attributes":[
+                            {
+                                "attributeName":"App Pool Name",
+                                "attributeValue":"app pool 1",
+                                "type":"attribute"
+                            },
+                            {
+                                "attributeName":"custom app attribute",
+                                "attributeValue":"",
+                                "type":"attribute"
+                            },
+                            {
+                                "attributeName":"Password",
+                                "attributeValue":"3M3u7nkDzxWb0aJ/IZYeWw==",
+                                "type":"attribute"
+                            },
+                            {
+                                "attributeName":"Public IP",
+                                "attributeValue":"",
+                                "type":"attribute"
+                            },
+                            {
+                                "attributeName":"QualiX_IP",
+                                "attributeValue":"192.168.42.238",
+                                "type":"attribute"
+                            },
+                            {
+                                "attributeName":"User",
+                                "attributeValue":"",
+                                "type":"attribute"
+                            }
+                        ],
+                        "type":"appResourceInfo"
+                    },
+                    "type":"deployAppParams"
+                },
+                "actionId":"34fa9b0b-bbbe-4e16-ba26-ace61468f6aa",
+                "type":"deployApp"
+            }
+        ]
+    }
+}
+
