@@ -1,7 +1,14 @@
 from cloudshell.shell.core.session.cloudshell_session import CloudShellSessionContext
-from cloudshell.logging.qs_logger import get_qs_logger
 from cloudshell.shell.core.context import ResourceCommandContext
+from cloudshell.core.logger.qs_logger import get_qs_logger
 import json
+
+
+# custom attribute attached to app resource models
+VM_RESOURCE_POOL_ATTR = "App Pool Name"
+
+# custom attribute attached to cloud provider resource, where pool limits will be defined
+CP_RESOURCE_RESTRICTED_ATTR = "Restricted App Model Pools"
 
 
 class AppLimitDeploymentError(Exception):
@@ -32,12 +39,6 @@ def validate_app_deployment(context, request):
     :param str request: json str of app deploy request
     :return:
     """
-    # custom attribute attached to app resource models
-    VM_RESOURCE_POOL_ATTR = "App Pool Name"
-
-    # custom attribute attached to cloud provider resource, where pool limits will be defined
-    CP_RESOURCE_RESTRICTED_ATTR = "Restricted App Model Pools"
-
     api = CloudShellSessionContext(context).get_api()
     res_id = context.reservation.reservation_id
     logger = get_qs_logger(log_group=res_id,

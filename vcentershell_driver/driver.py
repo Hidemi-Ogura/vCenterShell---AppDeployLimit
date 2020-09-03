@@ -1,12 +1,9 @@
-import json
-
 from cloudshell.cp.core import DriverRequestParser
 from cloudshell.cp.core.models import DeployApp, DriverResponse, SaveApp, DeleteSavedApp
 from cloudshell.cp.core.utils import single
 
 from cloudshell.cp.vcenter.commands.command_orchestrator import CommandOrchestrator
-from cloudshell.shell.core.context import ResourceCommandContext, CancellationContext, ResourceRemoteCommandContext
-from cloudshell.shell.core.session.cloudshell_session import CloudShellSessionContext
+from cloudshell.shell.core.context import ResourceCommandContext, CancellationContext
 from cloudshell.shell.core.resource_driver_interface import ResourceDriverInterface
 from cloudshell.cp.vcenter.common.vcenter.model_auto_discovery import VCenterAutoModelDiscovery
 from cloudshell.cp.vcenter.models.DeployFromTemplateDetails import DeployFromTemplateDetails
