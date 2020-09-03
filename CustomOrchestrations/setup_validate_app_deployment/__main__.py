@@ -1,7 +1,6 @@
 from cloudshell.workflow.orchestration.setup.default_setup_orchestrator import DefaultSetupWorkflow
 from cloudshell.workflow.orchestration.sandbox import Sandbox, WorkFlowException
 from first_module import first_module_flow
-from AppDeploymentException import AppLimitDeploymentError
 import time
 
 sandbox = Sandbox()
@@ -10,7 +9,6 @@ api = sandbox.automation_api
 res_id = sandbox.id
 
 DefaultSetupWorkflow().register(sandbox)
-# sandbox.workflow.on_preparation_ended(first_module_flow, None)
 
 try:
     sandbox.execute_setup()
