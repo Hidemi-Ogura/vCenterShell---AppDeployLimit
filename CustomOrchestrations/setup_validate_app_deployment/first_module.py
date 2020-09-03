@@ -15,8 +15,5 @@ def first_module_flow(sandbox, components=None):
     api = sandbox.automation_api
     res_id = sandbox.id
     logger = sandbox.logger
-    warn_print(api, sandbox.id, "=== Hello from sandbox! ===")
+    res_details = api.GetReservationDetails(res_id).ReservationDescription
 
-    resources = api_help.get_reservation_resources(api, res_id)
-    resource_count = len(resources)
-    sb_print(api, res_id, "resource count in sandbox: " + str(resource_count))

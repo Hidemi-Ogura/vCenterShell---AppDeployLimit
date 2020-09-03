@@ -3,7 +3,7 @@ from cloudshell.helpers.scripts.cloudshell_dev_helpers import attach_to_cloudshe
 from credentials import credentials
 from first_module import first_module_flow
 
-LIVE_SANDBOX_ID = "25d3b09a-5b1a-4433-8688-5311044a64ec"
+LIVE_SANDBOX_ID = "7454355d-7f2c-4105-989c-eab7c7a2c7b7"
 
 attach_to_cloudshell_as(user=credentials["user"],
                         password=credentials["password"],
